@@ -2,18 +2,21 @@ import pytest
 from day_01.solution import rotate, rotate_with_passes
 
 
-def test_rotate():
-    assert rotate(5, 3) == 8
-    assert rotate(5, 3, rotate_left=True) == 2
-
-    assert rotate(5, 95) == 0
-    assert rotate(5, 5, rotate_left=True) == 0
-
-    assert rotate(5, 96) == 1
-    assert rotate(5, 6, rotate_left=True) == 99
-
-    assert rotate(5, 200) == 5
-    assert rotate(5, 200, rotate_left=True) == 5
+@pytest.mark.parametrize(
+    "start,amount,rotate_left,expected",
+    [
+        (5, 3, False, 8),
+        (5, 3, True, 2),
+        (5, 95, False, 0),
+        (5, 5, True, 0),
+        (5, 96, False, 1),
+        (5, 6, True, 99),
+        (5, 200, False, 5),
+        (5, 200, True, 5),
+    ],
+)
+def test_rotate(start, amount, rotate_left, expected):
+    assert rotate(start, amount, rotate_left) == expected
 
 
 @pytest.mark.parametrize(
