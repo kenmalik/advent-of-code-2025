@@ -1,3 +1,4 @@
+from __future__ import annotations
 from pathlib import Path
 from dataclasses import dataclass
 
@@ -12,6 +13,18 @@ class Range:
 
     def contains(self, val: int):
         return self.start <= val <= self.end
+
+    def intersects(self, other: Range) -> bool:
+        return (
+            self.contains(other.start)
+            or self.contains(other.end)
+            or other.contains(self.start)
+            or other.contains(self.end)
+        )
+
+
+def merge(a: Range, b: Range) -> Range:
+    return Range(min(a.start, b.start), max(a.end, b.end))
 
 
 def part_1():
@@ -36,6 +49,32 @@ def part_1():
     print(fresh_count)
 
 
+def part_2():
+    ranges: list[Range] = []
+
+    for id_range in read_values():
+        if id_range == "":
+            break
+
+        start, end = id_range.split("-")
+        new_range = Range(int(start), int(end))
+
+        i = 0
+        while i < len(ranges):
+            if new_range.intersects(ranges[i]):
+                new_range = merge(new_range, ranges.pop(i))
+            else:
+                i += 1
+
+        ranges.append(new_range)
+
+    total = 0
+    for r in ranges:
+        total += r.end - r.start + 1
+
+    print("Total Fresh IDs:", total)
+
+
 def is_fresh(val: int, ranges: list[Range]):
     for r in ranges:
         if r.contains(val):
@@ -50,4 +89,5 @@ def read_values():
 
 
 if __name__ == "__main__":
-    part_1()
+    # part_1()
+    part_2()
