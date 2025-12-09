@@ -74,6 +74,42 @@ def read_points(file: Path) -> list[Point]:
     return points
 
 
+def part_2():
+    points = read_points(input_file)
+
+    pairs = []
+    for i in range(len(points)):
+        for j in range(i + 1, len(points)):
+            pairs.append((points[i], points[j]))
+
+    pairs.sort(key=lambda p: dist2(p[0], p[1]), reverse=True)
+
+    circuits: list[set[Point]] = []
+    unconnected = set(points)
+    last = None
+    while unconnected:
+        p1, p2 = pairs.pop()
+
+        connections = []
+
+        for i in range(len(circuits) - 1, -1, -1):
+            c = circuits[i]
+            if p1 in c or p2 in c:
+                connections.append(circuits.pop(i))
+
+        new_circuit = {p1, p2}
+        for c in connections:
+            new_circuit |= c
+        circuits.append(new_circuit)
+
+        unconnected.difference_update((p1, p2))
+        last = (p1, p2)
+
+    if last:
+        l1, l2 = last
+        print(l1.x * l2.x)
+
+
 def dist2(a: Point, b: Point) -> int:
     dx = a.x - b.x
     dy = a.y - b.y
@@ -84,3 +120,4 @@ def dist2(a: Point, b: Point) -> int:
 
 if __name__ == "__main__":
     part_1()
+    part_2()
